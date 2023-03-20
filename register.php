@@ -1,5 +1,11 @@
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/autoload.php';
+
 $error = '';
 $success_message = '';
 
@@ -33,7 +39,33 @@ if (isset($_POST['register'])) {
     } else {
     
         if ($user->save()) {
-            $success_message = "Registeration Completed";
+
+            $mail = new PHPMailer(true);
+            $mail->isSMTP = true;
+
+            $mail->SMTPAuth = true;
+
+            $mail->Username = 'emailadress@test.com';
+            $mail->Password = 'password';
+
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port = 80;
+            $mail->setFrom('tutorial@webslesson.info', 'Webslesson');
+            $mail->addAddress($user->getEmail());
+
+            $mail->isHTML(true);
+            $mail->Subject = "Registration Verification for chat Application Demo";
+
+            $mail->Body = '
+                <p>Thank you for regisering for Chat Application Demo.</p>
+                <p>This is a verification email, plase click the link to verifi your email address.</p>
+            ';
+
+            $mail->send();
+
+            $success_message = 'Verification Email sent to ' . $user->getEmail() . ', so 
+            before login first verify your';
+        
         } else {
             $error = "Something Went Worng Try Again";
         }
