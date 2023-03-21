@@ -2,7 +2,6 @@
 session_start();
 
 
-
 ?>
 
 <!DOCTYPE html>
@@ -129,10 +128,19 @@ session_start();
             console.log(e.data);
             
             let data = JSON.parse(e.data);
-            let row_class = 'row justify-content-start';
-            let background_class = 'text-dark alert-light';
 
-            let html_data = "<div class='"+row_class+"'><div class='col-sm-10'><div class='shadow-sm alert"+background_class+"'>"+data.msg+"</div></div></div>"
+            let row_class = '';
+            let background_class = '';
+
+            if (data.from == 'Me') {
+                row_class = 'row justify-content-start';
+                background_class = 'text-dark alert-light';
+            } else {
+                row_class = 'row justify-content-end';
+                background_class = 'alert-success';
+            }
+
+            let html_data = "<div class='"+row_class+"'><div class='col-sm-10'><div class='shadow-sm alert "+background_class+"'><b>"+data.from+" - </b>"+data.msg+"<br /></div class='text-right'><small><i>"+data.dt+"</i></small></div></div></div></div>"
 
             $('#messages_area').append(html_data);
             $('#chat_message').val('');
@@ -149,9 +157,11 @@ session_start();
                 let message = $('#chat_message').val();
 
                 let data = {
-                    userid: user_id,
+                    userId: user_id,
                     msg: message
                 };
+
+                console.log(JSON.stringify(data));
 
                 conn.send(JSON.stringify(data));
 
