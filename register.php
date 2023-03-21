@@ -40,31 +40,46 @@ if (isset($_POST['register'])) {
     
         if ($user->save()) {
 
+
             $mail = new PHPMailer(true);
-            $mail->isSMTP = true;
 
-            $mail->SMTPAuth = true;
+            $mail->isSMTP();// Set mailer to use SMTP
+            $mail->CharSet = "utf-8";// set charset to utf8
+            $mail->SMTPAuth = true;// Enable SMTP authentication
+            $mail->SMTPSecure = 'tls';// Enable TLS encryption, `ssl` also accepted
 
-            $mail->Username = 'emailadress@test.com';
-            $mail->Password = 'password';
+            $mail->Host = 'sandbox.smtp.mailtrap.io';// Specify main and backup SMTP servers
+            $mail->Port = 2525;// TCP port to connect to
+            $mail->SMTPOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                )
+            );
+            $mail->isHTML(true);// Set email format to HTML
 
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port = 80;
-            $mail->setFrom('tutorial@webslesson.info', 'Webslesson');
-            $mail->addAddress($user->getEmail());
+            $mail->Username = '7c2ef40bab28ca';// SMTP username
+            $mail->Password = '3f2834e458672f';// SMTP password
 
+            $mail->setFrom('coffeelegendary0323@gmail.com', 'mailtrap');//Your application NAME and EMAIL
+    
+            $mail->addAddress($user->getEmail(), $user->getName());// Target email
             $mail->isHTML(true);
             $mail->Subject = "Registration Verification for chat Application Demo";
-
+       
             $mail->Body = '
-                <p>Thank you for regisering for Chat Application Demo.</p>
-                <p>This is a verification email, plase click the link to verifi your email address.</p>
+            <p>Thank you for registering for Chat Application Demo.</p>
+                <p>This is a verification email, please click the link to verify your email address.</p>
+                <p><a href="http://localhost:8000/verify.php?code='.$user->getVerificationcode().'">Click to Verify</a></p>
+                <p>Thank you...</p>
             ';
 
             $mail->send();
 
-            $success_message = 'Verification Email sent to ' . $user->getEmail() . ', so 
-            before login first verify your';
+
+            $success_message = 'Verification Email sent to ' . $user->getEmail() . ', so before login first verify your email';
+
         
         } else {
             $error = "Something Went Worng Try Again";

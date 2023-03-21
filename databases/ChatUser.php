@@ -173,6 +173,33 @@ class ChatUser
 			return false;
 		}
     }
+
+    public function isValidEmailVerificationCode()
+    {
+        $query = '
+            SELECT * FROM users WHERE verification_code = :verification_code
+        ';
+        
+        $statement = $this->connect->prepare($query);
+        $statement->bindParam(':verification_code', $this->verification_code);
+        $statement->execute();
+        
+        return $statement->rowCount() > 0 ? true : false;
+    }
+
+    public function enableUserAccount()
+    {
+        $query = '
+            UPDATE users SET status = :status
+            WHERE verification_code = :verification_code
+        ';
+
+        $statement = $this->connect->prepare($query);
+        $statement->bindParam(':status', $this->status);
+        $statement->bindParam(':verification_code', $this->verification_code);
+        
+        return $statement->execute() ? true : false;
+    }
     
 
 }
