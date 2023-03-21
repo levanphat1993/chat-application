@@ -215,7 +215,64 @@ class ChatUser
 
         return $statement->execute() ? true : false;
     }
+
+    public function getUserDataById()
+    {
+        $query = "
+		SELECT * FROM users 
+		WHERE id = :id";
+
+		$statement = $this->connect->prepare($query);
+
+		$statement->bindParam(':id', $this->id);
+
+		try
+		{
+			if($statement->execute())
+			{
+				$user_data = $statement->fetch(PDO::FETCH_ASSOC);
+			}
+			else
+			{
+				$user_data = array();
+			}
+		}
+		catch (Exception $error)
+		{
+			echo $error->getMessage();
+		}
+
+		return $user_data;
+    }
     
+    public function updateImage($_user_profile)
+    {
+        $extension = explode('.', $_user_profile['name']);
+        $new_name = rand() . '.' . $extension[1];
+        $destination = 'images/' . $new_name;
+        move_uploaded_file($_user_profile['tmp_name'], $destination);
+        
+        return $destination;
+    }
+
+    public function updateData()
+    {
+        $query = "
+            UPDATE users 
+            SET name = :name, email = :email, password = :password, profile = :profile
+            WHERE id = :id
+        ";
+
+        $statement = $this->connect->prepare($query);
+        $statement->bindParam(':name', $this->name);
+        $statement->bindParam(':email', $this->email);
+        $statement->bindParam(':password', $this->password);
+        $statement->bindParam(':profile', $this->profile);
+        $statement->bindParam(':id', $this->id);
+
+        return $statement->execute() ? true : false;
+
+    }
 
 }
 
