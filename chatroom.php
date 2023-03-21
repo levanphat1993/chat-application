@@ -71,7 +71,25 @@ session_start();
         <br />
 		<div class="row">
             <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header"><h3>Chat Room</h3></div>
+                    <div class="card-body" id="messages_area">
 
+                    </div>
+                </div>
+                <form method="post" id="chat_form">
+                    <div class="input-group mb3">
+                        <textarea class="form-control" id="chat_message" name="chat_message"
+                        placeholder="Type Messages Here" data-parsley-maxlength="1000"
+                        data-parsley-pattern="/^[a-zA-Z0-9\s]+$/" required></textarea>
+                        <div class="input-group-append">
+                            <button type="submit" name="send" id="send" class="btn btn-primary">
+                                <i class="fa fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="validation_error"></div>
+                </form>
             </div>
             <div class="col-lg-4">
                 <?php 
@@ -102,6 +120,44 @@ session_start();
 	
     $(document).ready(function(){
 
+        var conn = new WebSocket('ws://localhost:8088');
+        conn.onopen = function(e) {
+            console.log("Connection established!");
+        };
+
+        conn.onmessage = function(e) {
+            console.log(e.data);
+            
+            let data = JSON.parse(e.data);
+            let row_class = 'row justify-content-start';
+            let background_class = 'text-dark alert-light';
+
+            let html_data = "<div class='"+row_class+"'><div class='col-sm-10'><div class='shadow-sm alert"+background_class+"'>"+data.msg+"</div></div></div>"
+
+            $('#messages_area').append(html_data);
+            $('#chat_message').val('');
+        };
+
+        $('#chat_form').parsley();
+
+        $('#chat_form').on('submit', function(event){
+            event.preventDefault();
+
+            if ($('#chat_form').parsley().isValid()) {
+
+                let user_id = $('#login_user_id').val();
+                let message = $('#chat_message').val();
+
+                let data = {
+                    userid: user_id,
+                    msg: message
+                };
+
+                conn.send(JSON.stringify(data));
+
+            }
+        });
+
         $('#logout').click(function(){
 
             var user_id = $('#login_user_id').val();
@@ -122,7 +178,6 @@ session_start();
                         location = 'index.php';
                     }
                 }
-
             });
 
         });
