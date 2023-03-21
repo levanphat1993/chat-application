@@ -75,14 +75,19 @@ session_start();
             </div>
             <div class="col-lg-4">
                 <?php 
-                    
+                    $login_user_id = '';
+
                     foreach ($_SESSION['user_data'] as $key => $value) {
-                        ?>
                         
+                            $login_user_id = $value['id'];
+                        
+                        ?>
+                            <input type="hidden" name="login_user_id" id="login_user_id" value="<?php echo $login_user_id; ?>" />
                             <div class="mt-3 mb-3 text-center">
                                 <img src="<?php echo $value['profile']; ?>" width="150" class="img-fluid rounded-circle img-thumbnail" />
                                 <h3 class="mt-2"><?php echo $vaule['name']; ?></h3>
                                 <a href="profile.php" class="btn btn-secondary mt-2 mb-2">edit</a>
+                                <input type="button" class="btn btn-primary mt-2 mb-2" name="logout" id="logout" value="logout" />
                             </div>
                         
                         <?php
@@ -95,6 +100,36 @@ session_start();
 </body>
 <script type="text/javascript">
 	
+    $(document).ready(function(){
+
+        $('#logout').click(function(){
+
+            var user_id = $('#login_user_id').val();
+
+            $.ajax({
+                url: "action.php",
+                method: "POST",
+                data: {
+                    user_id: user_id,
+                    action: 'leave'
+                },
+                success: function(data)
+                {
+                    let response = JSON.parse(data);
+
+                    if (response.status == 1) {
+
+                        location = 'index.php';
+                    }
+                }
+
+            });
+
+        });
+
+    });
+
+
 	
 </script>
 </html>
