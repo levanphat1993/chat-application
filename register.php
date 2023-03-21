@@ -30,11 +30,11 @@ if (isset($_POST['register'])) {
     $user->setCreatedOn(date('Y-m-d H:i:s'));
     $user->setVerificationCode(md5(uniqid()));
  
-    $data = $user->getUserDataByEmail();
+    $user_data = $user->getUserDataByEmail();
 
  
 
-    if (is_array($data) && count($data) > 0) {
+    if (is_array($user_data) && count($user_data) > 0) {
         $error = 'This Email Already Register';
     } else {
     

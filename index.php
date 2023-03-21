@@ -1,6 +1,52 @@
 <?php
 
 session_start();
+$error = '';
+
+if (isset($_SESSION['user_data'])) {
+    header('location:chatroom.php');
+}
+
+if (isset($_POST['login'])) {
+   
+    require_once('databases/ChatUser.php');
+
+    $user = new ChatUser;
+    $user->setEmail($_POST['email']);
+
+    $user_data = $user->getUserDataByEmail();
+
+    if (is_array($user_data) && count($user_data) > 0) {
+     
+        if ($user_data['status'] == 'Enable') {
+            if ($user_data['password'] == md5($_POST['password'])) {
+
+                    $user->setId($user_data['id']);
+                    $user->SetLoginStatus('Login');
+
+                    if ($user->updateUserLoginData()) {
+                        $_SESSION['user_data'][$user_data['id']] = [
+                             'id' => $user_data['id'],
+                             'name' => $user_data['name'],
+                             'profile' => $user_data['profile']
+                        ];
+                        header('location:chatroom.php');
+                    } 
+
+            } else {
+                $error = 'Wrong Password';
+            }
+
+        } else {
+
+            $error = 'Please Verifi Your Email Address';
+        }
+
+    } else {
+        $error = 'This Email Already Register';
+    }
+
+}
 
 
 ?>
@@ -53,7 +99,17 @@ session_start();
                                 '.$_SESSION["success_message"].'
                             </div>
                         ';
-                        //unset($_SESSION["success_message"]);
+                        unset($_SESSION["success_message"]);
+
+                    }
+
+                    if ($error != '') {
+
+                        echo '
+                            <div class="alert alert-danger">
+                                '.$error.'
+                            </div>
+                        ';
 
                     }
                 
@@ -61,7 +117,24 @@ session_start();
                 <div class="card">
                     <div class="card-header">Login</div>
                     <div class="card-body">
-                    
+                        <form method="post" id="login_form">
+                            
+                            <div class="form-group">
+                                <label>Enter Your Email Address</label>
+                                <input type="text" name="email" id="email" class="form-control"
+                                    data-parsley-type="email" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Enter Your Password</label>
+                                <input type="password" name="password" id="password" class="form-control" required />
+                            </div>
+
+                            <div class="form-group text-center">
+                                <input type="submit" name="login" id="login" class="btn btn-primary" value="Login" />
+                            </div>
+
+                        </form>
                     </div>  
                 </div>
             </div>

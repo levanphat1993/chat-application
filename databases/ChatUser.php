@@ -197,7 +197,22 @@ class ChatUser
         $statement = $this->connect->prepare($query);
         $statement->bindParam(':status', $this->status);
         $statement->bindParam(':verification_code', $this->verification_code);
-        
+
+        return $statement->execute() ? true : false;
+    }
+
+    public function updateUserloginData()
+    {
+       
+        $query = '
+            UPDATE users SET login_status = :login_status
+            WHERE id = :id
+        ';
+       
+        $statement = $this->connect->prepare($query);
+        $statement->bindParam(':login_status', $this->login_status);
+        $statement->bindParam(':id', $this->id);
+
         return $statement->execute() ? true : false;
     }
     
