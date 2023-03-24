@@ -12,4 +12,10 @@ create table users (
     primary key (id)
 );
 
-
+create table chatrooms (
+    `id` int(11) not null auto_increment,
+    `user_id` int(11) not null,
+    `msg` varchar(200) not null,
+    `created_on` datetime not null,
+    primary key (id)
+);

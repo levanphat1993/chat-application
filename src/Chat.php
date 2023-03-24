@@ -5,6 +5,7 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
 require dirname(__DIR__) . "/databases/ChatUser.php";
+require dirname(__DIR__) . "/databases/ChatRooms.php";
 
 class Chat implements MessageComponentInterface {
     protected $clients;
@@ -27,8 +28,13 @@ class Chat implements MessageComponentInterface {
 
         $data = json_decode($msg, true);
 
-        
         $user = new \ChatUser;
+        $chat = new \ChatRooms;
+
+        $chat->setUserId($data['userId']);
+        $chat->setMessage($data['msg']);
+        $chat->setCreatedOn(date('Y-m-d H:i:s'));
+        $chat->save();
 
         $user->setId($data['userId']);
         $user_data = $user->getUserDatabyId();
