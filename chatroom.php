@@ -1,6 +1,17 @@
 <?php 
 session_start();
 
+if (!isset($_SESSION['user_data'])) {
+    header('location:index.php');
+}
+
+require_once('databases/ChatRooms.php');
+
+$chat = new ChatRooms;
+
+$chat_data = $chat->getAllChatData();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -72,7 +83,47 @@ session_start();
                 <div class="card">
                     <div class="card-header"><h3>Chat Room</h3></div>
                     <div class="card-body" id="messages_area">
+                        <?php 
 
+
+                            foreach ($chat_data as $chat)
+                            {
+
+                        
+                              
+
+                                if (isset($_SESSION['user_data'][$chat['user_id']])) {
+                                    
+                                    $from = 'Me';
+                                    $row_class = 'row justify-content-start';
+                                    $background_class = 'text-dark alert-light';
+
+                                } else {
+
+                                    $from = $chat['name'];
+                                    $row_class = 'row justify-content-end';
+                                    $background_class = 'alert-success';
+
+                                }
+
+
+                                echo '
+                                    <div class="'.$row_class.'">
+                                        <div class="col-sm-10">
+                                            <div class="shadow-sm alert '.$background_class.'">
+                                                <b>'.$from.' - </b>'.$chat["msg"].'
+                                                <br />
+                                                <div class="text-right">
+                                                    <small><i>'.$chat["created_on"].'</i></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ';
+
+                            }
+                        
+                        ?>
                     </div>
                 </div>
                 <form method="post" id="chat_form">
@@ -146,6 +197,8 @@ session_start();
         };
 
         $('#chat_form').parsley();
+
+        $('#messages_area').scrollTop($('#messages_area')[0].scrollHeight);
 
         $('#chat_form').on('submit', function(event){
             event.preventDefault();

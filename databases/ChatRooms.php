@@ -70,6 +70,19 @@ class ChatRooms
         return $statement->execute() ? true : false;
     }
 
+    public function getAllChatData()
+    {
+        $query = "
+            SELECT * FROM chatrooms
+                INNER JOIN users ON users.id = chatrooms.user_id
+                ORDER BY chatrooms.id ASC;
+        ";
+
+        $statement = $this->connect->prepare($query);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
 
 ?>
