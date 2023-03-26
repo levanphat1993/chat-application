@@ -6,11 +6,13 @@ if (!isset($_SESSION['user_data'])) {
 }
 
 require_once('databases/ChatRooms.php');
+require_once('databases/ChatUser.php');
 
 $chat = new ChatRooms;
-
 $chat_data = $chat->getAllChatData();
 
+$user = new ChatUser;
+$user_data = $user->getUserAllData();
 
 ?>
 
@@ -88,10 +90,6 @@ $chat_data = $chat->getAllChatData();
 
                             foreach ($chat_data as $chat)
                             {
-
-                        
-                              
-
                                 if (isset($_SESSION['user_data'][$chat['user_id']])) {
                                     
                                     $from = 'Me';
@@ -159,8 +157,46 @@ $chat_data = $chat->getAllChatData();
                         
                         <?php
                     }
-                
                 ?>
+
+                <div class="card mt-3">
+                    <div class="card-header">User List</div>
+                    <div class="card-body" id="user_list">
+                        <div class="list-group lit-group-flush">
+                            <?php 
+
+                                if (count($user_data) > 0) {
+                                    
+                                    foreach ($user_data as $key => $user) {
+                                        
+                                        $icon = '<i class="fa fa-circle text-danger"></i>';
+
+                                        if ($user['login_status'] == 'Login') {
+
+                                            $icon = '<i class="fa fa-circle text-success"></i>';
+
+                                        }
+
+                                        if ($user['id'] != $login_user_id ) {
+                                    
+                                            echo '
+                                                <a class="list-group-item list-group-item-action">
+                                                    <img src="'.$user['profile'].'" class="img-fluid rounded-circle img-thumbnail" width="50" />
+                                                    <span class="ml-1"><strong>'.$user['name'].'</strong></span>
+                                                    <span class="mt-2 float-right">'.$icon.'</span>
+                                                </a>
+                                            ';
+
+                                        }
+
+                                    }
+
+                                }
+                            ?>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 		</div>
 	</div>

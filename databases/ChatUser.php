@@ -271,7 +271,18 @@ class ChatUser
         $statement->bindParam(':id', $this->id);
 
         return $statement->execute() ? true : false;
+    }
 
+    public function getUserAllData()
+    {
+        $query = "
+            SELECT * FROM users WHERE 1
+        ";
+
+        $statement = $this->connect->prepare($query);
+        $statement->execute();
+        $data = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $data;
     }
 
 }
