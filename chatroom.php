@@ -83,7 +83,16 @@ $user_data = $user->getUserAllData();
 		<div class="row">
             <div class="col-lg-8">
                 <div class="card">
-                    <div class="card-header"><h3>Chat Room</h3></div>
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col col-sm-6">
+                                <h3>Chat Room</h3>
+                            </div>
+                            <div class="col col-sm-6 text-right">
+                                <a href="privatechat.php" class="btn btn-success btn-sm">Private Chat</a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-body" id="messages_area">
                         <?php 
 

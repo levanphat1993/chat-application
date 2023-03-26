@@ -285,6 +285,31 @@ class ChatUser
         return $data;
     }
 
+    public function getUserAllDataWithStatusCount()
+    {
+        $query = "
+                SELECT
+                    id,
+                    name,
+                    profile,
+                    login_status,
+                    (
+                        SELECT
+                            COUNT(*)
+                        FROM
+                            chat_message
+                        WHERE
+                            to_user_id = :id AND from_user_id = users.id AND status = 'No' ) AS count_status
+                FROM
+                    users;
+        ";
+
+        $statement = $this->connect->prepare($query);
+        $statement->bindParam(':id', $this->id);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
 
 ?>
